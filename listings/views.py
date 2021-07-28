@@ -32,7 +32,8 @@ def search(request):
     if 'city' in request.GET:
         city = request.GET['city']
         if city:
-            queryset_list = queryset_list.filter(city__iexact=city)
+            # hoping to fix trailing space error but no
+            queryset_list = queryset_list.filter(city__icontains=city)
     # State
     if 'state' in request.GET:
         state = request.GET['state']
@@ -43,11 +44,16 @@ def search(request):
         bedrooms = request.GET['bedrooms']
         if bedrooms:
             queryset_list = queryset_list.filter(bedrooms__lte=bedrooms)
-
+    # Price
+    if 'price' in request.GET:
+        price = request.GET['price']
+        if price:
+            queryset_list = queryset_list.filter(price__lte=price)
     context = {
         'state_choices': state_choices,
         'bedroom_choices': bedroom_choices,
         'price_choices': price_choices,
-        'listings': queryset_list
+        'listings': queryset_list,
+        'values': request.GET
     }
     return render(request, 'listings/search.html', context)
